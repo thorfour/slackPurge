@@ -11,9 +11,10 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
-const toke = "ADD TOKEN"
 const slackfilesListURL = "https://slack.com/api/files.list"
 const slackfilesDelURL = "https://slack.com/api/files.delete"
 
@@ -33,11 +34,20 @@ type fileInfo struct {
 
 func init() {
 	flag.Parse()
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
 }
 
 func main() {
 
-	data, err := getFiles(*age, *count)
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	token := viper.GetString("token")
+
+	data, err := getFiles(*age, *count, token)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -59,7 +69,7 @@ func main() {
 	}
 
 	if delete {
-		if ok := delFiles(data); ok != nil {
+		if ok := delFiles(data, token); ok != nil {
 			fmt.Println(ok)
 		} else {
 			fmt.Printf("Successfully deleted %v files\n", len(data.Files))
@@ -69,7 +79,7 @@ func main() {
 	}
 }
 
-func getFiles(age, count int) (*fileList, error) {
+func getFiles(age, count int, token string) (*fileList, error) {
 
 	// Create time stamp
 	stamp := time.Now().AddDate(0, 0, -1*age).Unix()
@@ -98,11 +108,11 @@ func getFiles(age, count int) (*fileList, error) {
 	return data, nil
 }
 
-func delFiles(f *fileList) error {
+func delFiles(f *fileList, token string) error {
 
 	// Delete all files
 	for _, a := range f.Files {
-		ok := delFile(a.ID)
+		ok := delFile(a.ID, token)
 		if ok != nil {
 			return fmt.Errorf("Failed to delete file %v", a.Title)
 		}
@@ -115,7 +125,7 @@ type okStruct struct {
 	OK bool `json:"ok"`
 }
 
-func delFile(id string) error {
+func delFile(id string, token string) error {
 
 	vals := url.Values{}
 	vals.Add("token", token)
