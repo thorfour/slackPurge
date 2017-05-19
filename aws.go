@@ -62,8 +62,10 @@ func createDeleteRequestResp(s *slackResp, fl *fileList) {
 	}
 
 	var fileList string
+	var fileID string
 	for _, f := range fl.Files {
 		fileList = fmt.Sprintf("%v%v\t%v KiB\t%v\n", fileList, f.Title, f.Size/1024, time.Unix(f.Created, 0))
+		fileID = fmt.Sprintf("%v %v", fileID, f.ID)
 	}
 
 	s.RespType = inchannel
@@ -73,7 +75,7 @@ func createDeleteRequestResp(s *slackResp, fl *fileList) {
 		s.Attachments[i].Text = fileList
 		s.Attachments[i].Actions = make([]action, 2) // Yes and No
 		s.Attachments[i].Actions[0].Name = "yes"
-		s.Attachments[i].Actions[0].Value = "yes"
+		s.Attachments[i].Actions[0].Value = fileID
 		s.Attachments[i].Actions[0].Type = "button"
 		s.Attachments[i].Actions[0].Text = "Yes"
 		s.Attachments[i].Actions[0].Confirm.Ok_text = "Deleted"
