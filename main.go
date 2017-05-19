@@ -35,6 +35,11 @@ func main() {
 		return
 	}
 
+	if len(data.Files) == 0 {
+		fmt.Println("Nothing to delete")
+		return
+	}
+
 	for _, f := range data.Files {
 		fmt.Printf(" %v \t%v KiB Created: %v\n", f.Title, f.Size/1024, time.Unix(f.Created, 0))
 	}
