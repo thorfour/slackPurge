@@ -30,23 +30,17 @@ func main() {
 	}
 
 	token := decodedMap["token"]
-	user := decodedMap["user"]
+	//user := decodedMap["user"] // FIXME user currently unused
 
-	fmt.Println(decodedMap, token, user)
-
-	/* TODO determine the requested action
-	switch text[0] {
-	case "DELETE": // User selected to delete the files previously sent
-		delFiles(text[1]) // Second argument is expected to be the file list
+	switch { // TODO add code to actually delete
 	default:
-		fl, err := getFiles() // Get all the files and return a confirmation message to the user
+		fl, err := getFiles(30, 20, token) // Get all the files and return a confirmation message to the user
 		if err != nil {
 			errorResp(resp, "No files match the criteria")
 			return
 		}
-		createDeleteRequestResp(resp)
+		createDeleteRequestResp(resp, fl)
 	}
-	*/
 }
 
 func errorResp(s *slackResp, e string) {
