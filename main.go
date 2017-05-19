@@ -1,4 +1,4 @@
-//+build !AWS, !GCE
+//+build !AWS,!GCE
 
 package main
 

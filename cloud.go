@@ -1,10 +1,9 @@
-//+build AWS, GCE
+//+build AWS GCE
 
 package main
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 	"time"
 )
@@ -23,23 +22,19 @@ func main() {
 		return
 	}
 
-	decodedMap, err := url.ParseQuery(os.Args[1])
-	if err != nil {
-		errorResp(resp, "url.ParseQuery")
-		return
-	}
-
-	token := decodedMap["token"]
-	if token == nil {
-		errorResp(resp, "Not token received")
-		return
-	}
+	/*
+		decodedMap, err := url.ParseQuery(os.Args[1])
+		if err != nil {
+			errorResp(resp, "url.ParseQuery")
+			return
+		}
+	*/
 
 	//user := decodedMap["user"] // FIXME user currently unused
 
 	switch { // TODO add code to actually delete
 	default:
-		fl, err := getFiles(30, 20, token[0]) // Get all the files and return a confirmation message to the user
+		fl, err := getFiles(30, 20, token) // Get all the files and return a confirmation message to the user
 		if err != nil {
 			errorResp(resp, "No files match the criteria")
 			return
