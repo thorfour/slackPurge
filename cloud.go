@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -22,19 +23,27 @@ func main() {
 		return
 	}
 
-	/*
-		decodedMap, err := url.ParseQuery(os.Args[1])
-		if err != nil {
-			errorResp(resp, "url.ParseQuery")
-			return
-		}
-	*/
+	var a interface{}
+	if err := json.Unmarshal([]byte(os.Args[1]), &a); err != nil {
+		errorResp(resp, fmt.Sprintf("%v :: %v", err.Error(), os.Args[1]))
+		return
+	}
 
-	//user := decodedMap["user"] // FIXME user currently unused
+	m, ok := a.(map[string]interface{})
+	if !ok {
+		errorResp(resp, "map parse error")
+		return
+	}
+
+	user, ok := m["user_id"].(string)
+	if !ok {
+		errorResp(resp, "can't find user_id")
+		return
+	}
 
 	switch { // TODO add code to actually delete
 	default:
-		fl, err := getFiles(30, 10, token) // Get all the files and return a confirmation message to the user
+		fl, err := getFiles(30, 10, token, user) // Get all the files and return a confirmation message to the user
 		if err != nil {
 			errorResp(resp, "No files match the criteria")
 			return

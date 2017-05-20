@@ -7,10 +7,10 @@
 var cp = require("child_process");
 
 exports.handler = function(req, res) {
-    var queryStr = unescape(req.body);
+    var queryStr = JSON.stringify(req.body);
+    console.log(queryStr);
     var proc = cp.spawnSync("./slackPurge", [queryStr], {stdio: 'pipe', encoding: "utf8"});
     var resp = proc.stdout;
-    console.log(req.body.message);
     res.status(200).json(JSON.parse(resp));
 };
 

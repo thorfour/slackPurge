@@ -27,7 +27,7 @@ type okStruct struct {
 	OK bool `json:"ok"`
 }
 
-func getFiles(age, count int, token string) (*fileList, error) {
+func getFiles(age, count int, token, user string) (*fileList, error) {
 
 	// Create time stamp
 	stamp := time.Now().AddDate(0, 0, -1*age).Unix()
@@ -36,6 +36,7 @@ func getFiles(age, count int, token string) (*fileList, error) {
 	vals.Add("token", token)
 	vals.Add("ts_to", fmt.Sprintf("%v", stamp))
 	vals.Add("count", fmt.Sprintf("%v", count))
+	vals.Add("user", user)
 	queryURL := fmt.Sprintf("%v?%v", slackfilesListURL, vals.Encode())
 	resp, err := http.Get(queryURL)
 	if err != nil {

@@ -31,7 +31,7 @@ func main() {
 
 	token := viper.GetString("token")
 
-	data, err := getFiles(*age, *count, token)
+	data, err := getFiles(*age, *count, token, "")
 	if err != nil {
 		fmt.Println(err)
 		return
