@@ -81,7 +81,7 @@ func createDeleteRequestResp(s *slackResp, fl *fileList) {
 		s.Attachments[i].Actions[0].Value = fileID
 		s.Attachments[i].Actions[0].Type = "button"
 		s.Attachments[i].Actions[0].Text = "Yes"
-		s.Attachments[i].Actions[0].Confirm.Ok_text = "Deleted"
+		s.Attachments[i].Actions[0].Confirm.Ok_text = "Delete"
 		s.Attachments[i].Actions[0].Confirm.Text = "Are you sure?"
 		s.Attachments[i].Actions[1].Name = "no"
 		s.Attachments[i].Actions[1].Value = "no"
