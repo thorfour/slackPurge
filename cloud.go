@@ -76,6 +76,7 @@ func createDeleteRequestResp(s *slackResp, fl *fileList) {
 	s.Attachments = make([]attach, 1)
 	for i := range s.Attachments {
 		s.Attachments[i].Text = fileList
+		s.Attachments[i].CallbackID = "del_req"
 		s.Attachments[i].Actions = make([]action, 2) // Yes and No
 		s.Attachments[i].Actions[0].Name = "yes"
 		s.Attachments[i].Actions[0].Value = fileID

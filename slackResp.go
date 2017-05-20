@@ -10,6 +10,7 @@ type slackResp struct {
 
 type attach struct {
 	Fallback    string   `json:"fallback,omitempty"`
+	CallbackID  string   `json:"callback_id"`
 	Color       string   `json:"color,omitempty"`
 	Pretext     string   `json:"pretext,omitempty"`
 	Author_name string   `json:"author_name,omitempty"`
