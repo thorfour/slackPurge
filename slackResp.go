@@ -58,3 +58,35 @@ func (s *slackResp) String() string {
 
 	return string(b)
 }
+
+type slackMsg struct {
+	Payload slackPayload `json:"payload"`
+}
+
+type slackPayload struct {
+	Actions      []action `json:"actions"`
+	CallbackID   string   `json:"callback_id"`
+	Team         teamInfo `json:"team"`
+	Channel      channel  `json:"channel"`
+	User         user     `json:"user"`
+	ActionTS     string   `json:"action_ts"`
+	MessageTS    string   `json:"message_ts"`
+	AttachmentId string   `json:"attachment_id"`
+	Token        string   `json:"token"`
+	IsAppUnfurl  bool     `json:"is_app_unfurl"`
+}
+
+type teamInfo struct {
+	ID     string `json"id"`
+	Domain string `json:"domain"`
+}
+
+type channel struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type user struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}

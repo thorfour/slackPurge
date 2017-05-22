@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -36,20 +37,54 @@ func main() {
 	}
 
 	user, ok := m["user_id"].(string)
-	if !ok {
-		errorResp(resp, "can't find user_id")
-		return
-	}
+	if !ok { // This means it's a response from a button
 
-	switch { // TODO add code to actually delete
-	default:
-		fl, err := getFiles(30, 10, token, user) // Get all the files and return a confirmation message to the user
-		if err != nil {
-			errorResp(resp, "No files match the criteria")
+		// TODO THOR check if user requested to DElete or aborte
+
+		p, ok := m["payload"].(string)
+		if !ok {
+			errorResp(resp, "Unable to get Payload from map")
 			return
 		}
-		createDeleteRequestResp(resp, fl)
+
+		pay := new(slackPayload)
+		if err := json.Unmarshal([]byte(p), pay); err != nil {
+			errorResp(resp, fmt.Sprintf("Unable to Unmarshal payload: %v", err))
+			return
+		}
+
+		if pay.Actions[0].Name == "yes" {
+
+			user = pay.User.ID
+			files := strings.Split(pay.Actions[0].Value, " ")
+
+			fl := new(fileList)
+			fl.Files = make([]fileInfo, len(files))
+			for i := range fl.Files { // Copy all fileID into file list
+				fl.Files[i].ID = files[i]
+			}
+
+			if err := delFiles(fl, token); err != nil {
+				errorResp(resp, fmt.Sprintf("DelFiles Err: %v", err.Error()))
+				return
+			}
+
+			createDeletedResp(resp)
+			return
+
+		} else {
+			createAbortDeleteResp(resp)
+			return
+		}
 	}
+
+	// Normal delete file list lookup
+	fl, err := getFiles(30, 10, token, user) // Get all the files and return a confirmation message to the user
+	if err != nil {
+		errorResp(resp, "No files match the criteria")
+		return
+	}
+	createDeleteRequestResp(resp, fl)
 }
 
 func errorResp(s *slackResp, e string) {
@@ -89,6 +124,22 @@ func createDeleteRequestResp(s *slackResp, fl *fileList) {
 		s.Attachments[i].Actions[1].Type = "button"
 		s.Attachments[i].Actions[1].Text = "No"
 	}
+
+	// Dump the response
+	fmt.Print(s)
+}
+
+func createDeletedResp(s *slackResp) {
+	s.RespType = inchannel
+	s.Text = "Deleted"
+
+	// Dump the response
+	fmt.Print(s)
+}
+
+func createAbortDeleteResp(s *slackResp) {
+	s.RespType = inchannel
+	s.Text = "Aborted"
 
 	// Dump the response
 	fmt.Print(s)
