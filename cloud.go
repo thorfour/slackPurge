@@ -39,8 +39,6 @@ func main() {
 	user, ok := m["user_id"].(string)
 	if !ok { // This means it's a response from a button
 
-		// TODO THOR check if user requested to DElete or aborte
-
 		p, ok := m["payload"].(string)
 		if !ok {
 			errorResp(resp, "Unable to get Payload from map")
@@ -56,7 +54,7 @@ func main() {
 		if pay.Actions[0].Name == "yes" {
 
 			user = pay.User.ID
-			files := strings.Split(pay.Actions[0].Value, " ")
+			files := strings.Split(strings.TrimPrefix(pay.Actions[0].Value, " "), " ")
 
 			fl := new(fileList)
 			fl.Files = make([]fileInfo, len(files))

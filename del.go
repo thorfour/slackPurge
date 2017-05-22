@@ -61,8 +61,7 @@ func delFiles(f *fileList, token string) error {
 
 	// Delete all files
 	for _, a := range f.Files {
-		ok := delFile(a.ID, token)
-		if ok != nil {
+		if err := delFile(a.ID, token); err != nil {
 			return fmt.Errorf("Failed to delete file %v", a.Title)
 		}
 	}
