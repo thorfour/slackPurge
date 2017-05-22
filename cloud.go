@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,9 +20,19 @@ func main() {
 
 	resp := new(slackResp)
 
-	if len(os.Args) != 2 { // <executable name> <url-encoded string>
+	if len(os.Args) > 3 { // <executable name> <url-encoded string> [age of files]
 		errorResp(resp, "Invalid number of arguments")
 		return
+	}
+
+	age := uint64(30) // 30 day old files or more as default
+
+	if len(os.Args) == 3 {
+		var err error
+		if age, err = strconv.ParseUint(os.Args[2], 10, 64); err != nil {
+			errorResp(resp, "Invalid age")
+			return
+		}
 	}
 
 	var a interface{}
@@ -77,9 +88,9 @@ func main() {
 	}
 
 	// Normal delete file list lookup
-	fl, err := getFiles(30, 10, token, user) // Get all the files and return a confirmation message to the user
+	fl, err := getFiles(int(age), 10, token, user) // Get all the files and return a confirmation message to the user
 	if err != nil {
-		errorResp(resp, "No files match the criteria")
+		infoResp(resp, "No files match the criteria")
 		return
 	}
 	createDeleteRequestResp(resp, fl)
@@ -88,6 +99,12 @@ func main() {
 func errorResp(s *slackResp, e string) {
 	s.RespType = ephemeral
 	s.Text = fmt.Sprintf("Error: %v", e)
+	fmt.Print(s)
+}
+
+func infoResp(s *slackResp, e string) {
+	s.RespType = ephemeral
+	s.Text = fmt.Sprintf("%v", e)
 	fmt.Print(s)
 }
 
